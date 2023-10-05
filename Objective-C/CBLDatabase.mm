@@ -1007,16 +1007,24 @@ static NSString* databasePath(NSString *name, NSString *dir) {
 
 static BOOL setupDatabaseDirectory(NSString *dir, NSError **outError)
 {
+    NSLog(@"======jackietest - creating database directory - start");
+    NSLog(@"======jackietest - creating database directory at: %@", dir);
     NSError* error;
     if (![[NSFileManager defaultManager] createDirectoryAtPath: dir
                                    withIntermediateDirectories: YES
-                                                    attributes: nil
+                                                    attributes: @{NSFileProtectionKey:
+                                                                      NSFileProtectionCompleteUntilFirstUserAuthentication}
                                                          error: &error]) {
         if (!CBLIsFileExistsError(error)) {
             if (outError) *outError = error;
             return NO;
         }
     }
+    NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:dir
+                                                                          error:nil];
+    NSString *protectionLevel = dict[NSFileProtectionKey];
+    NSLog(@"======jackietest - database directory protection level:%@", protectionLevel);
+    NSLog(@"======jackietest - creating database directory - end");
     return YES;
 }
 
